@@ -572,9 +572,9 @@ class Decompiler(object):
         op = operator_mapping[op]()
         return ast.Compare(oper1, [op], [oper2])
 
-    def COPY(decompiler, _):
-        pass  # this is not great, but stack is not the same as during runtime
-        # actual queries are hopefully covered by tests
+    def COPY(decompiler, i):
+        assert i > 0
+        decompiler.stack.append(decompiler.stack[-i])
 
     def COPY_FREE_VARS(decompiler, n):
         pass
@@ -960,9 +960,8 @@ class Decompiler(object):
             tos1.items = []
         tos1.items.append((tos, tos2))
 
-    def SWAP(decompiler, _):
-        pass  # this is not great, but stack is not the same as during runtime
-        # actual queries are hopefully covered by tests
+    def SWAP(decompiler, i):
+        decompiler.stack[-i], decompiler.stack[-1] = decompiler.stack[-1], decompiler.stack[-i]
 
     def UNARY_POSITIVE(decompiler):
         return ast.UnaryOp(op=ast.UAdd(), operand=decompiler.stack.pop())
